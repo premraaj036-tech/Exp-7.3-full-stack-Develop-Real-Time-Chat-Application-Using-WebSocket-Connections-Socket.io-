@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>💬 Real-Time Chat App</title>
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<style>
+body {
+font-family: Arial, sans-serif;
+background: #222;
+color: #fff;
+display: flex;
+flex-direction: column;
+align-items: center;
+height: 100vh;
+margin: 0;
+}
+h1 {
+margin-top: 20px;
+}
+#chat-box {
+width: 60%;
+max-width: 600px;
+background: #333;
+border-radius: 10px;
+padding: 20px;
+overflow-y: auto;
+height: 400px;
+margin-top: 20px;
+}
+.message {
+background: #444;
+padding: 10px;
+margin: 5px;
+border-radius: 5px;
+}
+form {
+margin-top: 20px;
+display: flex;
+gap: 10px;
+}
+input, button {
+padding: 10px;
+border-radius: 5px;
+border: none;
+}
+input {
+width: 250px;
+}
+button {
+background: #28a745;
+color: white;
+cursor: pointer;
+}
+</style>
+</head>
+<body>
+<h1>💬 Real-Time Chat Application</h1>
+
+<div>
+<input type="text" id="username" placeholder="Enter your name" />
+</div>
+
+<div id="chat-box"></div>
+
+<form id="chat-form">
+<input id="message" placeholder="Type a message..." autocomplete="off" required />
+<button type="submit">Send</button>
+</form>
+
+<script>
+const socket = io();
+
+const chatBox = document.getElementById("chat-box");
+const chatForm = document.getElementById("chat-form");
+const messageInput = document.getElementById("message");
+const usernameInput = document.getElementById("username");
+
+// Receive message
+socket.on("chat message", (data) => {
+const div = document.createElement("div");
+div.classList.add("message");
+div.textContent = `${data.username}: ${data.message}`;
+chatBox.appendChild(div);
+chatBox.scrollTop = chatBox.scrollHeight;
+});
+
+// Send message
+chatForm.addEventListener("submit", (e) => {
+e.preventDefault();
+const username = usernameInput.value || "Anonymous";
+const message = messageInput.value.trim();
+if (message) {
+socket.emit("chat message", { username, message });
+messageInput.value = "";
+}
+});
+</script>
+</body>
+</html>
